@@ -82,9 +82,9 @@
 {
     UIDeviceOrientation orient = [UIDevice currentDevice].orientation;
     if (orient == UIInterfaceOrientationLandscapeLeft || orient == UIInterfaceOrientationLandscapeRight) {
-        return 3;
+        return 4;
     }else{
-        return 2;
+        return 3;
     }
 }
 
