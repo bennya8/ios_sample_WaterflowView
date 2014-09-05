@@ -11,7 +11,7 @@
 @class WaterflowView;
 @class WaterflowCell;
 
-@protocol WaterflowViewDelegate <NSObject,UIScrollViewDelegate,UITableViewDelegate>
+@protocol WaterflowViewDelegate <NSObject,UIScrollViewDelegate>
 
 @optional
 
