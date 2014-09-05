@@ -213,9 +213,7 @@
     [self.headerView setFrame:CGRectMake(0, -60, self.frame.size.width, 60)];
     
     [self.footerView setFrame:CGRectMake(0, maxContentHeight, self.frame.size.width, 60)];
-    
-    [self.footerView setBackgroundColor:[UIColor orangeColor]];
-    
+        
     [self.footerView setHidden:NO];
 
 }
