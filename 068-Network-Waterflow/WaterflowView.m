@@ -19,6 +19,10 @@
 
 @property (strong, nonatomic) NSMutableDictionary *screenCells;
 
+@property (weak, nonatomic) UIView *headerView;
+
+@property (weak, nonatomic) UIView *footerView;
+
 @end
 
 @implementation WaterflowView
@@ -27,8 +31,45 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    if (self.cells == 0) {
-        [self reloadData];
+    
+    if (self.headerView == nil) {
+        
+        UIView *headerView = [[UIView alloc]init];
+        
+        [headerView setFrame:CGRectMake(0, -60, self.frame.size.width, 60)];
+        
+        [headerView setBackgroundColor:[UIColor orangeColor]];
+        
+        self.headerView = headerView;
+        
+        [self addSubview:headerView];
+        
+        if ([self.delegate respondsToSelector:@selector(waterflowView:viewForHeader:)]) {
+            
+            [self.delegate waterflowView:self viewForHeader:self.headerView];
+            
+        }
+        
+    }
+    
+    if (self.footerView == nil) {
+        
+        UIView *footerView = [[UIView alloc]init];
+        
+        [footerView setFrame:CGRectZero];
+        
+        self.footerView = footerView;
+        
+        [self.footerView setHidden:YES];
+        
+        [self addSubview:footerView];
+        
+        if ([self.delegate respondsToSelector:@selector(waterflowView:viewForFooter:)]) {
+            
+            [self.delegate waterflowView:self viewForFooter:self.footerView];
+            
+        }
+        
     }
     
     for (NSIndexPath *indexPath in self.indexPaths) {
@@ -49,7 +90,7 @@
                 
                 [self.screenCells setObject:cell forKey:indexPath];
             }
-
+            
         } else {
             
             if (![self isFrameInScreen:cell.frame]) {
@@ -64,12 +105,15 @@
         
     }
     
+    [self didRefreshingHeader];
+    
+    [self didRefreshingFooter];
+    
 }
 
 - (id)dequeueReusableCellWithIdentifier:(NSString *)identifier
 {
     WaterflowCell *cell = [self.reusableCells anyObject];
-    
     
     if (cell) {
         [self.reusableCells removeObject:cell];
@@ -81,7 +125,7 @@
 - (BOOL)isFrameInScreen:(CGRect)frame
 {
     return (frame.origin.y + frame.size.height) > self.contentOffset.y &&
-            frame.origin.y < (self.contentOffset.y + self.bounds.size.height);
+    frame.origin.y < (self.contentOffset.y + self.bounds.size.height);
 }
 
 - (void)reloadData
@@ -94,6 +138,7 @@
     }
     
     [self resetLayout];
+    
 }
 
 - (void)resetLayout
@@ -127,14 +172,15 @@
     }
     
     for (UIView *view in [self subviews]) {
-        [view removeFromSuperview];
+        if ([view isKindOfClass:[WaterflowCell class]]) {
+            [view removeFromSuperview];
+        }
     }
     
     CGFloat columnHeight[self.columns];
     NSInteger column = 0;
     
     for (NSIndexPath *indexPath in self.indexPaths) {
-        //        WaterflowCell *cell = [self.dataSource waterflowView:self cellForRowAtIndexPath:indexPath];
         
         CGFloat width = self.frame.size.width / self.columns;
         
@@ -163,9 +209,18 @@
     }
     
     [self setContentSize:CGSizeMake(self.frame.size.width, maxContentHeight)];
+    
+    [self.headerView setFrame:CGRectMake(0, -60, self.frame.size.width, 60)];
+    
+    [self.footerView setFrame:CGRectMake(0, maxContentHeight, self.frame.size.width, 60)];
+    
+    [self.footerView setBackgroundColor:[UIColor orangeColor]];
+    
+    [self.footerView setHidden:NO];
+
 }
 
-#pragma mark - delegate implementation
+#pragma mark - @required delegate implementation
 - (NSInteger)numberOfCells
 {
     return [self.dataSource numberOfCellsInWaterflowView:self];
@@ -175,5 +230,52 @@
 {
     return [self.dataSource numberOfColumnsInWaterflowView:self];
 }
+
+#pragma mark - @optional delegate implementation
+- (void)didRefreshingHeader
+{
+    if ([self.delegate respondsToSelector:@selector(didRefreshingHeader)]) {
+        [self.delegate waterflowView:self didRefreshingHeader:self.headerView];
+    }
+}
+
+- (void)didRefreshingFooter
+{
+    if ([self.delegate respondsToSelector:@selector(didRefreshingFooter)]) {
+        [self.delegate waterflowView:self didRefreshingFooter:self.footerView];
+    }
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    
+    UITouch *touch = [touches anyObject];
+    
+    CGPoint location = [touch locationInView:self];
+    
+    NSArray *indexPaths = [self.screenCells allKeys];
+    
+    if ([self.delegate respondsToSelector:@selector(waterflowView:didSelectRowAtIndexPath:)]) {
+        
+        for (NSIndexPath *indexPath in indexPaths) {
+            
+            WaterflowCell *cell = self.screenCells[indexPath];
+            
+            if(CGRectContainsPoint(cell.frame, location)){
+                
+                
+                [self.delegate waterflowView:self didSelectRowAtIndexPath:indexPath];
+                
+                break;
+                
+            }
+            
+            
+        }
+        
+    }
+    
+}
+
 
 @end

@@ -119,4 +119,22 @@
     }
 }
 
+- (void)waterflowView:(WaterflowView *)waterflowView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSLog(@"%@",indexPath);
+}
+
+- (UIView *)waterflowView:(WaterflowView *)waterflowView viewForHeader:(UIView *)view
+{
+    [view setBackgroundColor:[UIColor grayColor]];
+    return view;
+}
+
+- (UIView *)waterflowView:(WaterflowView *)waterflowView viewForFooter:(UIView *)view
+{
+    [view setBackgroundColor:[UIColor grayColor]];
+
+    return view;
+}
+
 @end

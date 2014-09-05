@@ -11,9 +11,23 @@
 @class WaterflowView;
 @class WaterflowCell;
 
-@protocol WaterflowViewDelegate <NSObject,UIScrollViewDelegate>
+@protocol WaterflowViewDelegate <NSObject,UIScrollViewDelegate,UITableViewDelegate>
 
+@optional
 
+- (UIView *)waterflowView:(WaterflowView *)waterflowView viewForHeader:(UIView *)view;
+
+- (UIView *)waterflowView:(WaterflowView *)waterflowView viewForFooter:(UIView *)view;
+
+- (void)waterflowView:(WaterflowView *)waterflowView didSelectRowAtIndexPath:(NSIndexPath *)indexPath;
+
+- (void)waterflowView:(WaterflowView *)waterflowView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath;
+
+- (void)waterflowView:(WaterflowView *)waterflowView didRefreshingHeader:(UIView *)view;
+
+- (void)waterflowView:(WaterflowView *)waterflowView didRefreshingFooter:(UIView *)view;
+
+@optional
 
 @end
 
